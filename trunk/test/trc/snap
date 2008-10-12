@@ -1,0 +1,3 @@
+#
+set -ex
+jrunscript -cp ../../bin snap.js 10.0.0.2.23 > snap.out

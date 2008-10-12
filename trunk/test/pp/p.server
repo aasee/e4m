@@ -1,0 +1,3 @@
+#
+set -ex
+jrunscript -cp ../../bin peer.js localhost 4096 ../trc/tcpdump.log S 10.0.0.2.23
