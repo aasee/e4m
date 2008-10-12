@@ -1,0 +1,26 @@
+#
+set -ex
+
+cd launcher
+  rm -f {jsh,*.o}
+  make JDK_HOME=/opt/local/jdk1.6.0
+cd ..
+
+cd bin
+  rm -fr *
+  javac -d . -sourcepath ../src ../src/jsh/Main.java
+  cp ../src/shell.js jsh/
+  jar -cvfe jsh.jar jsh.Main jsh
+cd ..
+
+sudo mv bin/jsh.jar launcher/jsh  /usr/local/bin
+
+sudo ln -sf /opt/local/jdk1.6.0/jre/lib/i386/client/libjvm.so /usr/local/bin
+sudo /sbin/ldconfig
+
+cp src/jsh.rc ~/.jshrc
+
+src/hello.js
+src/example.js
+src/import.js
+
