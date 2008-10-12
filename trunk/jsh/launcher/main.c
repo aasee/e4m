@@ -177,9 +177,10 @@ int FindMain() {
                                               "([Ljava/lang/String;)V" );
     if ( main_id )
       return PASS;
+
     say( "Could not find %s.main()", MAIN_CLASS );
-    return FAIL;
   }
+  return FAIL;
 }
 
 int SetArg( int index, char* argv ) {
