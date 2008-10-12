@@ -11,7 +11,7 @@ struct ARGS* makeargs(char *buf) {
       instring = 0;
     }
     else {
-      if (! instring) {
+      if ( ! instring) {
         c++;
       }
       instring = 1;
@@ -31,7 +31,7 @@ struct ARGS* makeargs(char *buf) {
       instring = 0;
     }
     else {
-      if (! instring) {
+      if ( ! instring) {
         argv[c++] = argp+b;
       }
       argp[b] = buf[b];
@@ -54,4 +54,4 @@ int main(int argc, char* argv[]) {
     printf(">%d '%s'\n",i,p->argv[i]);
   return 0;
 }
- **/
+**/

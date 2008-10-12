@@ -65,8 +65,9 @@ int StartVM() {
     jvm_args.version = JNI_VERSION_1_2;
     jvm_args.ignoreUnrecognized = JNI_TRUE;
     rc = (*_CreateJavaVM)( &jvm, &env, &jvm_args );
-    if ( !rc )
+    if ( ! rc ) {
       return PASS;
+    }
     say( "JNI_CreateJavaVM rc=%d", rc );
   }
   return FAIL;  
@@ -110,8 +111,9 @@ int AllocVMLib() {
   char* libpath = filename( interpreter, "libjvm.so" );
   VMLib = dlopen( libpath, RTLD_NOW );
   free( libpath );
-  if ( VMLib )
+  if ( VMLib ) {
     return PASS;
+  }
   say( dlerror() );
   return FAIL;
 }
@@ -119,8 +121,9 @@ int AllocVMLib() {
 void FreeVMLib() {
   if ( VMLib ) {
     rc = dlclose(VMLib);
-    if ( rc )
+    if ( rc ) {
       say( "%s  rc=%d", dlerror(), rc );
+    }
   }
 }
 
@@ -129,8 +132,9 @@ int FindVM() {
     dlerror();
     *(void**) (&_CreateJavaVM) = dlsym( VMLib, "JNI_CreateJavaVM" );
     error = dlerror();
-    if ( error == NULL )
+    if ( error == NULL ) {
       return PASS;
+    }
     say( error );
   }
   return FAIL;
@@ -164,8 +168,9 @@ void RunMain() {
 
 int FindMainClass() {
   main_class = (*env)->FindClass( env, MAIN_CLASS );
-  if ( main_class )
+  if ( main_class ) {
     return PASS;
+  }
   say( "Could not find Main-Class: %s", MAIN_CLASS );
   return FAIL;
 }
@@ -175,9 +180,9 @@ int FindMain() {
     main_id = (*env)->GetStaticMethodID( env, main_class,
                                               "main",
                                               "([Ljava/lang/String;)V" );
-    if ( main_id )
+    if ( main_id )  {
       return PASS;
-
+    }
     say( "Could not find %s.main()", MAIN_CLASS );
   }
   return FAIL;
@@ -187,8 +192,9 @@ int SetArg( int index, char* argv ) {
   jstring arg = (*env)->NewStringUTF( env, argv );
   if ( arg ) {
     (*env)->SetObjectArrayElement( env, main_args, index, arg );
-    if ( (*env)->ExceptionCheck(env) != JNI_TRUE )
+    if ( (*env)->ExceptionCheck(env) != JNI_TRUE ) {
       return PASS;
+    }
   }
   return FAIL;
 }
@@ -198,8 +204,11 @@ int SetMainArgs() {
   if ( String ) {
     main_args = (*env)->NewObjectArray( env, command_argc, String, 0);
     if ( main_args ) {
-      for ( int i = 0; i < command_argc; i++)
-        if ( ! SetArg( i, command_argv[i] ) ) break;
+      for ( int i = 0; i < command_argc; i++) {
+        if ( ! SetArg( i, command_argv[i] ) ) {
+          break;
+        }
+      }
       return PASS;
     }
   }
