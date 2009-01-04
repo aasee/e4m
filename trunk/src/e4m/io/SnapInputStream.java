@@ -41,13 +41,5 @@ public class SnapInputStream extends InputStream {
         return Integer.parseInt(line.substring(index,index+2),16) & 0x00ff;
     }
   }
-  
-  public int readBytes(byte[] buf) throws IOException {
-    return read(buf);
-  }
-  
-  public int readBytes(byte[] buf, int off, int len) throws IOException {
-    return read(buf,off,len);
-  }
 
 }

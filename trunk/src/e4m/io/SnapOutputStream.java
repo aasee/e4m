@@ -35,10 +35,13 @@ public class SnapOutputStream extends OutputStream {
     buf[count++] = (byte)b;
   }
 
+  @Override
   public void close() throws IOException {
     flush();
+    reset();
   }
 
+  @Override
   public void flush() throws IOException {
     if (count < 1) return;
     String s;
@@ -88,13 +91,5 @@ public class SnapOutputStream extends OutputStream {
   public void reset() {
     count = offset = 0;
   }
-  
-  public void writeBytes(byte[] buf) throws IOException {
-    write(buf);  
-  }
-  
-  public void writeBytes(byte[] buf, int off, int len) throws IOException {
-    write(buf,off,len);  
-  }
-  
+
 }
