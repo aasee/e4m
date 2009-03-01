@@ -1,5 +1,5 @@
 
-import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.io.FileReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -9,9 +9,11 @@ import java.util.Locale;
 
 import e4m.io.SnapOutputStream;
 import e4m.net.tn3270.ds.Partition;
-import e4m.tcp.trace.TcpdumpReader;
+import e4m.js.trace.TcpdumpReader;
 import e4m.ui.Codec;
 import e4m.ui.SimpleCodec;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Prt {
 
@@ -27,10 +29,14 @@ public class Prt {
     codec = new SimpleCodec(charsetName);
   }
    
-  void tcpdump(String filename) throws FileNotFoundException {
+  void tcpdump(String filename) throws IOException {
     trc = new TcpdumpReader(new FileReader(filename));
   }
-  
+
+  void tcpdump(InputStream stream) throws IOException {
+    trc = new TcpdumpReader(new InputStreamReader(stream));  
+  }
+
   void printout(OutputStream print) {
     this.prt = new PrintWriter(print);
     this.snap = new SnapOutputStream(prt);

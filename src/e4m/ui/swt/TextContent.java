@@ -4,7 +4,7 @@ import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.events.VerifyEvent;
 
-import e4m.net.tn3270.datastream.Viewport;
+import e4m.net.tn3270.datastream.Text;
 import e4m.ui.SimpleForm;
 
 class TextContent extends SimpleForm implements StyledTextContent {
@@ -16,12 +16,12 @@ class TextContent extends SimpleForm implements StyledTextContent {
     this.reporter = new TextChanges();
   }
   
-  void updateFields(Viewport fields) {
+  void updateFields(Text fields) {
     setFields(fields);
     layoutFields();
   }
   
-  Viewport getFields() {
+  Text getFields() {
     syncFields();
     return this.field;
   }

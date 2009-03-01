@@ -3,7 +3,7 @@ package e4m.ui.html;
 import java.io.OutputStream;
 import java.nio.CharBuffer;
 
-import e4m.net.tn3270.datastream.Viewport;
+import e4m.net.tn3270.datastream.Text;
 import e4m.ui.Codec;
 import e4m.ui.SimpleGrid;
 
@@ -25,14 +25,14 @@ public class Html extends SimpleGrid {
     // TODO:
   }
   
-  public CharSequence parse(Viewport fields) {
+  public CharSequence parse(Text fields) {
     codec.decode(fields,grid);
-    StringBuilder buf = new StringBuilder();
-    parse(fields,buf);
-    return buf;
+    StringBuilder sbuf = new StringBuilder();
+    parse(fields,sbuf);
+    return sbuf;
   }
   
-  void parse(Viewport f, StringBuilder b) {
+  void parse(Text f, StringBuilder b) {
     b.append("<pre>");
 
     int row, col;
@@ -162,7 +162,7 @@ public class Html extends SimpleGrid {
     }
   }
   
-  void styles(StringBuilder buf, Viewport f, int i) {
+  void styles(StringBuilder buf, Text f, int i) {
     StringBuilder s = new StringBuilder();
 
     int fg = f.getForeground(i);
@@ -186,7 +186,7 @@ public class Html extends SimpleGrid {
   
   public CharSequence stylesheet() {
     return
-      "body{"                            +
+      "pre{"                             +
            "background-color:black;"     +
            "color:green;"                +
            "font-family:monospace;"      +

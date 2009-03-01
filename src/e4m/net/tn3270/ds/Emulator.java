@@ -143,7 +143,7 @@ class Emulator {
 
   void Graphic_Escape(int code) {
     // TODO: mark as Graphic Escape byte or map 'code' to another byte
-    Set_Character(code);
+    Set_Character(0x079); // use 'grave' instead
   }
   
   void Set_Character(int code) {

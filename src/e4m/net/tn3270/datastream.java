@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 public class datastream extends Tn3270Content {
     
-  public interface Page {
+  public interface Viewport {
     ByteBuffer datastream();
     byte[] header();
     int command();
@@ -12,10 +12,12 @@ public class datastream extends Tn3270Content {
     boolean restoreKeyboard();
     boolean resetModifiedDataTags();
     boolean soundAlarm();
-    Viewport fields();
+    int rows();
+    int columns();
+    Text fields();
   }
 
-  public interface Viewport {
+  public interface Text {
     ByteBuffer text();
 
     int index(int offset);   // field index for offset

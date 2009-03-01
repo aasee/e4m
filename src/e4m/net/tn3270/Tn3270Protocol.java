@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.ByteBuffer;
 
 /*
     tn3270 : // userid @ hostname : port / session ? MODEL=IBM3279-2-E

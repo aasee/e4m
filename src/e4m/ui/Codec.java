@@ -6,15 +6,15 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 
-import e4m.net.tn3270.datastream.Viewport;
+import e4m.net.tn3270.datastream.Text;
 
 public interface Codec {
 
   CharsetDecoder decoder( int charsetId );
   CharsetEncoder encoder( int charsetId );
 
-  boolean decode( Viewport in, CharBuffer out );
-  boolean encode( CharBuffer in, Viewport out );
+  boolean decode( Text in, CharBuffer out );
+  boolean encode( CharBuffer in, Text out );
 
   boolean decode( int charsetId,
                   ByteBuffer in, CharBuffer out,

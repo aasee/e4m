@@ -1,3 +1,2 @@
 #
-set -ex
-java -cp ../../bin e4m.net.script.TcpClient localhost 4096 client.js
+java -cp ../../build/classes e4m.js.tcp.TcpClient localhost 4096 client.js

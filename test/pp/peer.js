@@ -1,24 +1,21 @@
-importClass(java.lang.System);
-importClass(java.util.Arrays);
 importPackage(java.io);
 
 importPackage(Packages.e4m.io);
-importPackage(Packages.e4m.net.script);
-importPackage(Packages.e4m.net.trace);
+importPackage(Packages.e4m.js.tcp);
+importPackage(Packages.e4m.js.trace);
 
-if (arguments.length != 5) {
-  println("usage:   peer.js  <host>  <port>  <logfile>  <mode>  <id>");
+if (arguments.length != 4) {
+  println("usage:  peer.js  <host>  <port>  <mode>  <id>");
   quit();
 }
 
 var hostname = arguments[0];
 var portnum = arguments[1];
-var logfile_name = arguments[2];
-var socket_mode = arguments[3];
-var socket_id = arguments[4];
+var socket_mode = arguments[2];
+var socket_id = arguments[3];
 
-var log = new TcpdumpReader(new FileReader(logfile_name));
-var out = new SnapOutputStream(new OutputStreamWriter(System.out));
+var log = new TcpdumpReader(context.getReader());
+var out = new SnapOutputStream(context.getWriter());
 
 var ios;
 
@@ -26,14 +23,12 @@ for (;;) {
   var p = log.readPacket();
   if (!p) break;
 
-  var f = p.flags();
-
-  if (f.equals("S")) {
+  if (p.flags().equals("S")) {
     if (p.source().equals(socket_id)) {
       syn();
     }
   }
-  else if (f.equals("P")) {
+  else if (p.datalength() > 0) {
     if (p.destination().equals(socket_id)) {
       destination(p);
     }
@@ -42,6 +37,7 @@ for (;;) {
     }
   }
 }
+java.lang.Thread.sleep(3000);
 quit();
 
 
@@ -63,20 +59,26 @@ function source(p) {
   var buf = p.data();
   ios.write(buf);
   println("sent: "+buf.length);
+  out['write(byte[])'](buf);
+  out.flush();
+  out.reset();
 }
 
 function destination(p) {
   println("destination: "+p.timestamp());
   var data = p.data();
   var buf = Tcp.alloc(data.length);
-  var n = ios.read(buf);
+  var n = ios.readFully(buf);
+  println("received: "+buf.length);
+  out['write(byte[])'](buf);
+  out.flush();
+  out.reset();
   if (n == data.length && Tcp.cmp(data,buf)) {
-    println("received: "+data.length);
+    return;
   }
-  else {
-    println("received:");
-    out.writeBytes(x);
-    out.flush();
-    out.reset();
-  }
+  println("expecting: "+data.length);
+  out['write(byte[])'](data);
+  out.flush();
+  out.reset();
 }
+

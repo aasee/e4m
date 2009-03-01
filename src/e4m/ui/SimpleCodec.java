@@ -8,7 +8,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 
-import e4m.net.tn3270.datastream.Viewport;
+import e4m.net.tn3270.datastream.Text;
 
 public class SimpleCodec implements Codec {
 
@@ -43,7 +43,7 @@ public class SimpleCodec implements Codec {
   }
 
   @Override
-  public boolean decode(Viewport f, CharBuffer out) {
+  public boolean decode(Text f, CharBuffer out) {
     int p, err = 0;
     ByteBuffer in = f.text();
     for (int i = 0; i < f.count(); i++) {
@@ -60,7 +60,7 @@ public class SimpleCodec implements Codec {
   }
 
   @Override
-  public boolean encode(CharBuffer in, Viewport f) {
+  public boolean encode(CharBuffer in, Text f) {
     int err = 0;
     ByteBuffer out = f.text();
     for (int i = 0; i < f.count(); i++) {

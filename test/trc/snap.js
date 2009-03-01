@@ -1,7 +1,7 @@
 importClass(java.lang.System);
 importPackage(java.io);
 
-importPackage(Packages.e4m.net.trace);
+importPackage(Packages.e4m.js.trace);
 importPackage(Packages.e4m.io);
 
 var remote = arguments[0];
