@@ -1,5 +1,6 @@
 package e4m.ui.swt;
 
+import e4m.net.Pty;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
@@ -11,27 +12,42 @@ import org.eclipse.swt.widgets.Shell;
 
 import e4m.net.Vty;
 import e4m.net.tn3270.Tn3270Terminal;
-import e4m.net.tn3270.datastream.Viewport;
+import e4m.net.tn3270.datastream.Text;
 import e4m.ui.Codec;
 
 public class Tty implements Vty {
 	
   public static void main(String[] a) throws Exception {
-	  new Tn3270Terminal().start( new Tty(), a[0] );
+    String url = a[0];
+
+    Pty pty = new Tn3270Terminal();
+    Vty vty = new Tty();
+
+    pty.connect(url);
+    attach(vty,pty);
+    pty.configure(vty);
+    pty.poll(vty);
+    vty.close();
   }
 
-  static void pause() {
-    try { Thread.sleep(1000); }
-      catch (Exception e) {}
-  }
-
-  @Override
-  public void start() {
+  static void attach(final Vty vty, final Pty pty) {
     new Thread( new Runnable() {
-      public void run() { open(); }
+      public void run() {
+        try {
+          vty.open();
+          pty.disconnect();
+        }
+        catch (Exception e) {
+          RuntimeException re = new RuntimeException(e.toString(),e);
+          re.setStackTrace(e.getStackTrace());
+          throw re;
+        }
+      }
     }).start();
     pause();
   }
+
+  static void pause() { try { Thread.sleep(1000); } catch (Exception e) {} }
   
   Shell shell;
   Display display;
@@ -81,7 +97,7 @@ public class Tty implements Vty {
   }
    
   @Override
-  public void update(final int command, final int cursor, final Viewport fields) {
+  public void update(final int command, final int cursor, final Text fields) {
     display.syncExec(new Runnable() {
       public void run() {
         controller.updateFields(command,cursor,fields);    

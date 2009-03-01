@@ -1,5 +1,7 @@
 package org.ohio;
 
+import static org.ohio.Ohio.*;
+
 import java.io.IOException;
 
 /**
@@ -13,14 +15,14 @@ public interface OhioSession {
   public String getConfigurationResource();
 
   /**
-   *  Indicates whether this <code>OhioSession</code> object is connected to a
-   *  host.  True means connected, false means not connected.
+   *  Indicates whether this <code>OhioSession</code> object is connected to a host.
+   *  True means connected, false means not connected.
    */
   public boolean isConnected();
 
   /**
-   *  The <i>SessionName</i> for this <code>OhioSession</code> object.  The
-   *  <i>SessionName</i> is unique among all instances of <code>OhioSession</code>.
+   *  The <i>SessionName</i> for this <code>OhioSession</code> object.
+   *  The <i>SessionName</i> is unique among all instances of <code>OhioSession</code>.
    */
   public String getSessionName();
 
@@ -29,27 +31,24 @@ public interface OhioSession {
    */
   public Type getSessionType();
   
-  public enum Type {
-    UNKNOWN,  /* Unknown host */
-    TN3270,   /* 3270 host */
-    TN5250    /* 5250 host */
-  };
-
   /**
    *  The <code>OhioScreen</code> object for this session.
-   * @throws IOException 
+   *
+   *  @throws IOException
    */
   public OhioScreen getScreen() throws IOException;
 
   /**
    *  Starts the communications link to the host.
-   * @throws IOException 
+   *
+   *  @throws IOException
    */
   public void connect() throws IOException;
 
   /**
    *  Stops the communications link to the host.
-   * @throws IOException 
+   *
+   *  @throws IOException
    */
   public void disconnect() throws IOException;
 

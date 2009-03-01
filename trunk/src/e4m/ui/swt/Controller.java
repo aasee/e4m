@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextStyle;
 
 import e4m.net.Vty.AttentionListener;
-import e4m.net.tn3270.datastream.Viewport;
+import e4m.net.tn3270.datastream.Text;
 import e4m.ui.Codec;
 
 class Controller {
@@ -80,7 +80,6 @@ class Controller {
     if (content == null) return;
     Rectangle r = caretImage[OVERWRITE].getBounds();
     int y = content.getLineCount();
-    System.out.println("rectangle: "+r.width+' '+r.height+' '+y);
     widget.setSize( r.width * (content.getCharCount() / y), r.height * y );
   }  
 
@@ -88,7 +87,7 @@ class Controller {
     content.setCodec(codec);
   }
 
-  void updateFields(int command, int cursor, Viewport fields) {
+  void updateFields(int command, int cursor, Text fields) {
     styles.createStyleRanges(fields,defaultStyle);
     content.updateFields(fields);
     widget.redraw();
@@ -213,8 +212,7 @@ class Controller {
       case SWT.END:  return endKey();
       case SWT.TAB:  return tabKey();
       
-      case SWT.ESC:  System.out.println("ESC");
-          return enableKeyboard();
+      case SWT.ESC: return enableKeyboard();
     }
   }
 

@@ -1,7 +1,5 @@
 package e4m.ref;
 
-// OHIO_PLANE_COLOR, // Color Plane (standard HLLAPI CGA color values)  
-
 public interface CGA {
 
   static final int BACKGROUND     =  0; // x'F0'  -> ( BLACK on Displays,

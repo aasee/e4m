@@ -10,10 +10,10 @@ import java.nio.ByteBuffer;
 import e4m.io.SnapOutputStream;
 import e4m.net.telnet.TelnetConnection;
 import e4m.net.tn3270.Tn3270Connection;
-import e4m.net.tn3270.datastream.Page;
 import e4m.net.tn3270.datastream.Viewport;
+import e4m.net.tn3270.datastream.Text;
 import e4m.net.tn3270.ds.Partition;
-import e4m.tcp.trace.TcpdumpPacket;
+import e4m.js.trace.TcpdumpPacket;
 import e4m.ui.html.Html;
 
 public class Sim extends Prt {
@@ -29,17 +29,17 @@ public class Sim extends Prt {
   int fileno;
   
   void start(String[] a) throws Exception {
-    tcpdump(a[0]);
-    src = a[1];
-    String url = a[2];
-    html = new Html( Integer.parseInt(a[3]),   // rows
-                     Integer.parseInt(a[4]) ); // cols    
+    src = a[0];
+    String url = a[1];
+    html = new Html( Integer.parseInt(a[2]),   // rows
+                     Integer.parseInt(a[3]) ); // cols
     ebcdic("Cp037");
     html.setCodec(codec);
     fileno = 0;
     
-    if (a.length > 5) max = Integer.parseInt(a[5]);
-    
+    if (a.length > 4) max = Integer.parseInt(a[4]);
+
+    tcpdump(System.in);
     TcpdumpPacket p;
     while ((p = trc.readPacket()) != null) {
       log("p: "+p.timestamp()+' '+p.source()+' '+p.destination()+' '+p.flags()+' '+p.datalength());
@@ -116,23 +116,23 @@ public class Sim extends Prt {
   
   void receive(byte[] b) throws Exception {
     uc.getInputStream().reset();
-    Page p = (Page) uc.getContent();
-    ByteBuffer buf = p.datastream();
+    Viewport v = (Viewport) uc.getContent();
+    ByteBuffer buf = v.datastream();
 
     buf.position(0);
     log("packet: "+buf.remaining());
     dump(buf.array(),buf.position(),min(max,buf.limit()));
 
-    byte[] header = p.header();
+    byte[] header = v.header();
     ack(header);
 
-    if (p.command() > 0) {
+    if (v.command() > 0) {
       int seq = ((header[3] & 0x0ff) << 8) | (header[4] & 0x0ff);
-      System.err.println("parse: "+seq+" cmd:"+Integer.toHexString(p.command() & 0x0ff)
-                                      + " kb:"+p.restoreKeyboard()
-                                      +" mdt:"+p.resetModifiedDataTags());
-      if (p.fields() != null) {
-        print(p);
+      System.err.println("parse: "+seq+" cmd:"+Integer.toHexString(v.command() & 0x0ff)
+                                      + " kb:"+v.restoreKeyboard()
+                                      +" mdt:"+v.resetModifiedDataTags());
+      if (v.fields() != null) {
+        print(v);
       }
     }
   }
@@ -140,17 +140,17 @@ public class Sim extends Prt {
   void ack(byte[] b) throws IOException {
     if (b[2] == 0x02) {
       ((Tn3270Connection)uc).writeBytes( 0x002, 0x000, 0x000, b[3], b[4],
-                                         0x000, 0x0ff, 0x0fe );
+                                         0x000, 0x0ff, 0x0ef );
     }
   }
 
-  void print(Page p) throws Exception {
+  void print(Viewport v) throws Exception {
     fileno++;
     File f = new File("htm/t"+fileno+".html");
     OutputStream o = new FileOutputStream(f);
 
     printout(o);
-    Viewport v = p.fields();
+    Text t = v.fields();
     
     print(   "<html>"
       +'\n'+  "<head>"
@@ -159,15 +159,16 @@ public class Sim extends Prt {
     print(     "</style>"
       +'\n'+  "</head>"
       +'\n'+  "<body>"
-      +'\n'+   "<form>"
-      +'\n');    form(v);
+      +'\n'+   "<form action='t"+(fileno+1)+".html'>"
+               +"<input type='submit' value='next'>"
+      +'\n');    form(t);
     print(     "</form>"
       +'\n'+  "</body>"
       +'\n'+  "<!-- Buffer"
-      +'\n');       buffer(v.text());
+      +'\n');       buffer(t.text());
     print(    "-->"
       +'\n'+  "<!-- Fields"
-      +'\n');       fields(v,p.cursor());
+      +'\n');       fields(t,v.cursor());
     print(    "-->"
       +'\n'+  "<!-- Layout"
       +'\n');       layout();
@@ -182,8 +183,8 @@ public class Sim extends Prt {
   }
   
   void stylesheet() { println(html.stylesheet().toString()); }
-  void form(Viewport v) { println(html.parse(v).toString()); }
-  void fields(Viewport v, int c) { print((Partition.PresentationSpace)v,c); }
+  void form(Text t) { println(html.parse(t).toString()); }
+  void fields(Text t, int c) { print((Partition.PresentationSpace)t,c); }
   void layout() { print(html,html.height(),html.width()); }
   
   void buffer(ByteBuffer b) throws Exception {

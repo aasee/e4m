@@ -1,44 +1,36 @@
 package e4m.net.tn3270;
 
+import e4m.net.Pty;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
 
+import e4m.net.tn3270.datastream.Text;
 import e4m.net.tn3270.datastream.Viewport;
-import e4m.net.tn3270.datastream.Page;
 import e4m.net.Vty;
 import e4m.ui.SimpleCodec;
 import e4m.ref.AID;
+
 import static e4m.ref.RFC_2355.*;
 import static e4m.ref.STD_0008.*;
 import static e4m.ref.GA23_0059.*;
 
-
-public class Tn3270Terminal {
+public class Tn3270Terminal implements Pty {
   
-  protected Tn3270Connection urlc;
-  
-  public void start(Vty vty, String url) throws Exception {
-
+  static {
     System.setProperty("java.protocol.handler.pkgs","e4m.net");
     System.setProperty("java.content.handler.pkgs","e4m.net");
-
-    connect(url);
-    
-    vty.start();
-    configure(vty);
-    
-    poll(vty);  
-    vty.close();
   }
-  
+
+  protected Tn3270Connection urlc;
+
   public void poll(Vty vty) throws IOException {
     while (connected()) {
       urlc.getInputStream().reset();
       Object o = urlc.getContent();
-      if (o instanceof Page) {
-        Page p = (Page)o;
+      if (o instanceof Viewport) {
+        Viewport p = (Viewport)o;
 
         if (autoAcknowledge()) {
           byte[] b = p.header();
@@ -47,7 +39,7 @@ public class Tn3270Terminal {
           }
         }
 
-        Viewport fields = p.fields();
+        Text fields = p.fields();
         if (fields != null) {
           vty.reset(p.restoreKeyboard(),p.resetModifiedDataTags());
           vty.update(p.command(),p.cursor(),fields);
@@ -68,7 +60,7 @@ public class Tn3270Terminal {
   void setListener(Vty vty) {
     vty.setAttentionListener(
       new Vty.AttentionListener() {
-        public void attention(int aid, int cursor, Viewport fields) {
+        public void attention(int aid, int cursor, Text fields) {
           processAttention(aid,cursor,fields);
         }
       });
@@ -124,7 +116,7 @@ public class Tn3270Terminal {
 
   int responseSequence = 0;
 
-  public void processAttention(int aid, int cursor, Viewport fields) {
+  public void processAttention(int aid, int cursor, Text fields) {
     try {
       sendHeader();
 
@@ -175,7 +167,7 @@ public class Tn3270Terminal {
   void sendHeader() throws IOException {
     urlc.writeBytes( MH.S3270_DATA, 0x00, 0x00,
                      ((responseSequence >> 8) & 0x0ff),
-                     ((responseSequence++   ) & 0x0ff) );
+                     ((responseSequence ++  ) & 0x0ff) );
   }
 
   void sendTrailer() throws IOException {
@@ -183,7 +175,7 @@ public class Tn3270Terminal {
   }
 
 
-  public void sendModified(Viewport fields) throws IOException {
+  public void sendModified(Text fields) throws IOException {
     int b;
     ByteBuffer buf = fields.text();
     for (int i = 0; i < fields.count(); i++) {
@@ -212,8 +204,36 @@ public class Tn3270Terminal {
       }
     }
     else {
-      System.out.println("ingore Data Stream: "+(buf.get(0) & 0x0ff)+' '+command);
+      System.out.println("ignore Data Stream: "+(buf.get(0) & 0x0ff)+' '+command);
     }
+  }
+
+  public String getPrimaryLUName(ByteBuffer buf) {
+    int co = buf.get(26) & 0x00f;
+    int p = 26+1+co;
+    return LUName(buf,p);
+  }
+
+  public String getSecondaryLUName(ByteBuffer buf) {
+    int co = buf.get(26) & 0x00f;
+    int p = 26+1+co;
+    int plu = buf.get(p) & 0x0ff;
+    int d = p+1+plu;
+    int udf = buf.get(d) & 0x0ff;
+    int r = d+1+udf;
+    int urcf = buf.get(r) & 0x0ff;
+    int s = r+1+urcf;
+    return LUName(buf,s);
+  }
+
+  String LUName(ByteBuffer buf, int offset) {
+    int lu = buf.get(offset) & 0x0ff;
+    byte[] b = new byte[lu];
+    buf.position(offset+1);
+    buf.get(b);
+    try { return new String(b,"Cp037"); }
+      catch (Exception e) {} // TODO: make a message
+    return null;
   }
 
 }

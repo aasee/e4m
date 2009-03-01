@@ -1,3 +1,2 @@
 #
-set -ex
-java -cp ../../bin e4m.net.script.TcpServer localhost 4096 server.js
+java -cp ../../build/classes e4m.js.tcp.TcpServer localhost 4096 server.js

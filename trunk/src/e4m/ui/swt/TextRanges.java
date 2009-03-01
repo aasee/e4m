@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
 
-import e4m.net.tn3270.datastream.Viewport;
+import e4m.net.tn3270.datastream.Text;
 
 class TextRanges {
 
@@ -21,7 +21,7 @@ class TextRanges {
     this.width = width;    
   }
   
-  void createStyleRanges(Viewport fields, TextStyle defaultStyle) {
+  void createStyleRanges(Text fields, TextStyle defaultStyle) {
     lineStyles = new StyleRange[height][];
     createLineStyles(fields, defaultStyle);
   }
@@ -31,7 +31,7 @@ class TextRanges {
                                     : new StyleRange[] {new StyleRange()};
   }
 
-  void createLineStyles(Viewport tags, TextStyle defaultStyle) {
+  void createLineStyles(Text tags, TextStyle defaultStyle) {
     createLineStyles(lineStyles, height, width, tags, defaultStyle);
     
     // for (StyleRange[] list : lineStyles)
@@ -40,7 +40,7 @@ class TextRanges {
   }
 
   static void createLineStyles(StyleRange[][] lines, int rows, int columns,
-                               Viewport tags, TextStyle defaultStyle) {
+                               Text tags, TextStyle defaultStyle) {
     StyleRange item;
     List<StyleRange> list = new ArrayList<StyleRange>();
 
@@ -125,7 +125,7 @@ class TextRanges {
    *             Color underlineColor
    *               int underlineStyle
    */
-  static StyleRange style(TextStyle defaultStyle, Viewport tag, int i) {
+  static StyleRange style(TextStyle defaultStyle, Text tag, int i) {
     StyleRange s = new StyleRange(defaultStyle);
     s.start = tag.start(i);
     s.length = tag.length(i);

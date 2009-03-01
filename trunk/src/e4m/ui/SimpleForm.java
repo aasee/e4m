@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.BitSet;
 
-import e4m.net.tn3270.datastream.Viewport;
+import e4m.net.tn3270.datastream.Text;
 
 public class SimpleForm extends SimpleGrid {
   
@@ -14,13 +14,13 @@ public class SimpleForm extends SimpleGrid {
   }
 
   protected CharBuffer grid;
-  protected Viewport field;
+  protected Text field;
   protected BitSet mdt;
   
   boolean hasEditField;
   int currentEdit;
   
-  public void setFields(Viewport fields) {
+  public void setFields(Text fields) {
     this.field = fields;
     this.mdt = new BitSet(fields.count());
     currentEdit = -1;

@@ -3,13 +3,14 @@ package e4m.net.tn3270.ds;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import e4m.net.tn3270.datastream.Viewport;
+import e4m.net.tn3270.datastream.Text;
 
 public class Partition {
 
   Emulator emulator;
   Parser parser;
   Planar planar;
+  int[] dimension;
 
   public Partition() {
     this.emulator = new Emulator();
@@ -18,6 +19,11 @@ public class Partition {
 
   public void setSize(int rows, int columns) {
     this.planar = new Planar(rows,columns);
+    this.dimension = new int[] {rows,columns};
+  }
+
+  public int[] getSize() {
+    return dimension;
   }
 
   public void write(ByteBuffer in) {
@@ -49,7 +55,7 @@ public class Partition {
     return null;
   }
 
-  public Viewport getViewport() {
+  public Text getView() {
     Object[] p = planar.getView();
     PresentationSpace v = new PresentationSpace();
     v.start = (short[]) p[0];
@@ -58,7 +64,7 @@ public class Partition {
     return v;
   }
 
-  public class PresentationSpace implements Viewport {
+  public class PresentationSpace implements Text {
   
     short[] start;
     int[] attribute;
